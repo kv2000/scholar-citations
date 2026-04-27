@@ -9,11 +9,19 @@ on:
 permissions:
   contents: write
 
+# Serialize runs of this workflow so two runs can't race on `git push`.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history so `git pull --rebase` works on push conflict.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:

@@ -110,6 +110,13 @@ def main() -> int:
         return 2
     print(f"  got {len(articles)} articles\n")
 
+    print("-- raw articles from Scholar profile --")
+    for i, art in enumerate(articles):
+        v = (art.get("cited_by") or {}).get("value")
+        title = (art.get("title") or "").strip()
+        print(f"  [{i:2d}] cited={v!s:>4}  {title[:90]}")
+    print()
+
     counts: dict[str, int] = {}
     for key, title in papers.items():
         count, n = match_count(title, articles)
