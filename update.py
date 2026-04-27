@@ -48,36 +48,44 @@ def normalize(s: str) -> str:
     return re.sub(r"[^a-z0-9]", "", s.lower())
 
 
-def match_count(title: str, articles: list[dict]) -> int | None:
-    """Find the article whose normalized title best matches `title`."""
-    target = normalize(title)
-    if not target:
-        return None
+PREFIX_MIN = 20  # min normalized-prefix chars required for a "same paper" match
 
-    best_score = 0
-    best_count: int | None = None
+
+def match_count(title: str, articles: list[dict]) -> tuple[int | None, int]:
+    """Sum citations across every Scholar article that looks like the same
+    paper as `title`. Scholar often lists the arXiv preprint and the
+    conference version as two separate clusters with independent counts;
+    we want the combined number per paper.
+
+    Returns (total_citations, n_versions_merged); (None, 0) if no match.
+    """
+    target = normalize(title)
+    if not target or len(target) < PREFIX_MIN:
+        return None, 0
+
+    total = 0
+    n_matched = 0
     for art in articles:
         art_title = normalize(art.get("title", ""))
         if not art_title:
             continue
 
-        # Prefix match in either direction — handles title variants like
-        # "DUT: Real-time..." vs Scholar's "Real-time..."
+        # Either a strong shared prefix in both directions, or one title is
+        # contained in the other (handles "DUT: Real-time..." vs Scholar's
+        # "Real-time..." and "ASH..." arXiv vs CVPR variants).
         prefix = min(len(target), len(art_title), 30)
-        if target[:prefix] == art_title[:prefix]:
-            score = prefix
-        elif target in art_title or art_title in target:
-            score = min(len(target), len(art_title))
-        else:
+        same_prefix = prefix >= PREFIX_MIN and target[:prefix] == art_title[:prefix]
+        contained = target in art_title or art_title in target
+        if not (same_prefix or contained):
             continue
 
-        if score > best_score:
-            best_score = score
-            cited_by = art.get("cited_by", {}) or {}
-            value = cited_by.get("value")
-            best_count = int(value) if value is not None else 0
+        value = (art.get("cited_by") or {}).get("value")
+        total += int(value) if value is not None else 0
+        n_matched += 1
 
-    return best_count
+    if n_matched == 0:
+        return None, 0
+    return total, n_matched
 
 
 def main() -> int:
@@ -104,13 +112,14 @@ def main() -> int:
 
     counts: dict[str, int] = {}
     for key, title in papers.items():
-        count = match_count(title, articles)
+        count, n = match_count(title, articles)
         if count is None:
             counts[key] = existing.get(key, 0)
             print(f"  {key:18s}  no match  (kept {counts[key]})")
         else:
             counts[key] = count
-            print(f"  {key:18s}  {count}")
+            suffix = f"  [merged {n} versions]" if n > 1 else ""
+            print(f"  {key:18s}  {count}{suffix}")
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(counts, f, indent=2, ensure_ascii=False)
