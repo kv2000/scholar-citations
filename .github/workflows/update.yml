@@ -28,10 +28,20 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [[ -n "$(git status --porcelain citations.json)" ]]; then
-            git add citations.json
-            git commit -m "chore: update citations $(date -u +%Y-%m-%d)"
-            git push
-          else
+          if [[ -z "$(git status --porcelain citations.json)" ]]; then
             echo "No changes."
+            exit 0
           fi
+          git add citations.json
+          git commit -m "chore: update citations $(date -u +%Y-%m-%d)"
+          # Push with rebase-on-conflict retry — main may have moved between
+          # checkout and push (concurrent workflow runs, manual pushes, etc).
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "push attempt $attempt rejected; rebasing on origin/main..."
+            git pull --rebase origin main || exit 1
+          done
+          echo "push failed after 3 attempts" >&2
+          exit 1
