@@ -1,0 +1,9 @@
+Badge URL template (replace PAPERKEY):
+
+https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkv2000%2Fscholar-citations%2Fmain%2Fcitations.json&query=%24.PAPERKEY&label=scholar&color=4285F4&logo=googlescholar&labelColor=beige
+
+Wrapped link (link goes to author profile):
+
+<a href="https://scholar.google.com/citations?user=u5KCnv0AAAAJ&hl=en" target="_blank">
+  <img alt="Google Scholar citations" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkv2000%2Fscholar-citations%2Fmain%2Fcitations.json&query=%24.PAPERKEY&label=scholar&color=4285F4&logo=googlescholar&labelColor=beige">
+</a>

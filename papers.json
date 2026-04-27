@@ -1,0 +1,16 @@
+{
+  "mua": "MUA: Mobile Ultra-detailed Animatable Avatars",
+  "uma": "UMA: Ultra-detailed Human Avatars via Multi-level Surface Alignment",
+  "giga": "GIGA: Generalizable Sparse Image-driven Gaussian Humans",
+  "eva": "EVA: Expressive Virtual Avatars from Multi-view Videos",
+  "dut": "Real-time Free-view Human Rendering from Sparse-view RGB Videos using Double Unprojected Textures",
+  "tedra": "TEDRA: Text-based Editing of Dynamic and Photoreal Actors",
+  "trihuman": "TriHuman: A Real-time and Controllable Tri-plane Representation for Detailed Human Geometry and Appearance Synthesis",
+  "ash": "ASH: Animatable Gaussian Splats for Efficient and Photoreal Human Rendering",
+  "sketchmetaface": "SketchMetaFace: A Learning-based Sketching Interface for High-fidelity 3D Character Face Modeling",
+  "reef": "Registering Explicit to Implicit: Towards High-Fidelity Garment Mesh Reconstruction from Single Images",
+  "simpmodeling": "SimpModeling: Sketching Implicit Field to Guide Mesh Modeling for 3D Animalmorphic Head Design",
+  "deepfashion3d": "Deep Fashion3D: A Dataset and Benchmark for 3D Garment Reconstruction from Single Images",
+  "partsketcher": "Learning Part Generation and Assembly for Sketching Man-Made Objects",
+  "homefinder": "HomeFinder Revisited: Finding Ideal Homes with Reachability-Centric Multi-Criteria Decision Making"
+}

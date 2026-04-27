@@ -1,0 +1,37 @@
+name: Update Scholar citations
+
+on:
+  schedule:
+    # Every Monday 03:00 UTC
+    - cron: "0 3 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch citation counts
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        run: python update.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain citations.json)" ]]; then
+            git add citations.json
+            git commit -m "chore: update citations $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "No changes."
+          fi
